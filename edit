@@ -1,0 +1,5 @@
+#!/bin/bash
+
+declare -r SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+subl "${SCRIPT_DIR}/johandry.github.io_master"

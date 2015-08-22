@@ -1,0 +1,61 @@
+#!/bin/bash 
+
+declare -r SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+source "${SCRIPT_DIR}/common.sh"
+ 
+differences(){
+  diff -qr "${SCRIPT_DIR}/${MASTER}/" "${SCRIPT_DIR}/${GH_PAGES}/" | grep -v '/.git' 2>/dev/null
+}
+
+validate(){
+  DIFF=$(differences)
+
+  if [[ -z "${DIFF}" ]]
+  then
+    echo -n "No differences. The repositories are ready to be deployed"
+    if [[ "${2}" == "-t" ]] 
+      then
+      echo " ... but this is a test and the commit message would be: '${1}'"
+    else
+      commit_n_push "${1}"
+    fi
+  else
+    echo "Fix the differences:"
+    echo
+    echo "$DIFF"
+    echo
+    echo "Maybe you have to:"
+    echo
+    # Add other substitutions when appear. For example: Only in ...
+    echo "$DIFF" | sed -e 's/Files /cp "/' -e 's/ and /" "/' -e 's/ differ/"/'
+  fi
+}
+
+commit_n_push() {
+  [[ -z "${1}" ]] && echo " ... but the commit comment is missing :(" && exit 1
+  echo
+  cd "${SCRIPT_DIR}/${GH_PAGES}"
+  TO_DELETE=$(git ls-files --deleted) 
+  [[ -n ${TO_DELETE} ]] && git rm "${TO_DELETE}"
+  git add -A .
+  git commit -m "${1}"
+  git push origin gh-pages
+  echo
+  cd "${SCRIPT_DIR}/${MASTER}"
+  TO_DELETE=$(git ls-files --deleted) 
+  [[ -n ${TO_DELETE} ]] && git rm "${TO_DELETE}"
+  git add -A .
+  git commit -m "${1}"
+  git push origin master
+  echo " ... Done"
+}
+
+commit_msg="${1}"
+[[ "${1}" == "-t" ]] && do_test="-t" && commit_msg="${2}"
+[[ -z "${1}" ]] && do_test="-t" && commit_msg=
+
+pre_validations
+validate "${commit_msg}" "${do_test}"
+
+[[ -z "${do_test}" ]] && echo "Verify the deployment" && open ${URL}

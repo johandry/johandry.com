@@ -2,5 +2,7 @@ node_modules/
 bower_components/
 *.log
 
+johandry.github.io_*
+
 build/
 dist/

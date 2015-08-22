@@ -1,0 +1,6 @@
+#!/bin/bash 
+
+cp /Users/johandry/Dropbox/Public/resumes/Amador_Johandry-Resume.* johandry.github.io_master/resume/
+cp /Users/johandry/Dropbox/Public/resumes/Amador_Johandry-Resume.* johandry.github.io_gh-pages/resume/
+
+echo "Resumes latest versions (from Dropbox) have been copied to Master and GH Pages branches"

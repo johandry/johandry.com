@@ -1,0 +1,12 @@
+#!/bin/bash
+
+declare -r SCRIPT_DIR="$( cd "$( dirname "$0" )" && pwd )"
+source "${SCRIPT_DIR}/common.sh"
+
+branch="master"
+[[ -n ${1} && -d "${SCRIPT_DIR}/${CODE_DIR}_${1}" ]] && echo "Using branch ${1}" && branch="${1}"
+[[ ! -d "./${CODE_DIR}_${branch}" ]] && echo "Incorrect branch to start up (${branch}). Try again" && exit 1
+
+echo "Starting Web Server for branch: ${branch}"
+
+cd "${SCRIPT_DIR}/${CODE_DIR}_${branch}" && python -m SimpleHTTPServer
